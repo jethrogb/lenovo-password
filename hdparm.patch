@@ -1,0 +1,60 @@
+Copyright (c) 2015, Jethro Beekman
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without 
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this 
+list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice, 
+this list of conditions and the following disclaimer in the documentation 
+and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+diff -u -r hdparm-9.45.orig/hdparm.c hdparm-9.45/hdparm.c
+--- hdparm-9.45.orig/hdparm.c	2014-09-27 07:05:14.000000000 -0700
++++ hdparm-9.45/hdparm.c	2015-02-10 00:22:24.301915329 -0800
+@@ -2556,13 +2556,29 @@
+ 		fprintf(stderr, "missing PASSWD\n");
+ 		exit(EINVAL);
+ 	}
+-	if (strlen(argp) > maxlen) {
++	memset(security_password, 0, maxlen + 1);
++	if (0==strncmp(argp,"hex:",4)) {
++		argp+=4;
++		if (strlen(argp)!=(maxlen*2)) {
++			fprintf(stderr, "invalid PASSWD length (hex string must be exactly %d chars)\n", maxlen*2);
++			exit(EINVAL);
++		}
++		char* cur=security_password;
++		while (*argp)
++		{
++			int d[2];
++			d[0]=fromhex(*(argp++));
++			d[1]=fromhex(*(argp++));
++			*(cur++)=d[0]<<4 | d[1];
++		}
++	}
++	else if (strlen(argp) > maxlen) {
+ 		fprintf(stderr, "PASSWD too long (must be %d chars max)\n", maxlen);
+ 		exit(EINVAL);
+ 	}
+-	memset(security_password, 0, maxlen + 1);
+-	if (!handle_NULL || strcmp(argp, "NULL"))
++	else if (!handle_NULL || strcmp(argp, "NULL")) {
+ 		strcpy(security_password, argp);
++	}
+ 	printf("security_password=\"%s\"\n", security_password);
+ 	while (*argp)
+ 		++argp;
