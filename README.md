@@ -25,4 +25,9 @@ hdparm, e.g.:
 
     sudo hdparm --security-unlock "$P" /dev/sda
 
+To scan the partitions of this drive now that it is unlocked and ready for use, 
+run:
+
+    sudo partprobe /dev/sda
+
 See also https://jbeekman.nl/blog/2015/03/lenovo-thinkpad-hdd-password/
