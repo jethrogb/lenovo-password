@@ -94,13 +94,13 @@ end
 
 ### I/O FUNCTIONS ###
 def get_password
-	$stderr.print "Enter password: " if $stdin.isatty
 	if $stdin.isatty then
+		$stderr.print "Enter password: "
 		ret=$stdin.noecho(&:gets).chomp
+		$stderr.print "\n"
 	else
 		ret=$stdin.gets.chomp
 	end
-	$stderr.print "\n" if $stdin.isatty
 	return ret
 end
 
