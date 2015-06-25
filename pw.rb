@@ -141,7 +141,7 @@ begin
 	### COMPUTE ###
 	digest=_lenovo__hash_password(password,hdparm)
 	### OUTPUT ###
-	$stderr.puts "Warning: digest includes NULL-character (unsupported by standard hdparm)!" if digest.include?(0.chr)
+	$stderr.puts "Warning: digest includes NULL-character (unsupported by hdparm versions before 9.46)!" if digest.include?(0.chr)
 	print hex ? "hex:#{digest.unpack("H*")[0]}\n" : digest
 rescue Exception => e
 	### ERROR ###
