@@ -54,7 +54,7 @@ def read_hdparm(file,endianness=:detect)
 		if usable_for_endianness_check?(identify[47],0x80) then
 			swap_endianness!(identify) if hb(identify[47])!=0x80
 		elsif usable_for_endianness_check?(identify[255],0xa5) then
-			swap_endianness!(identify) if lb(identify[47])!=0xa5
+			swap_endianness!(identify) if lb(identify[255])!=0xa5
 		else
 			sn=identify[10...20].pack("n*")
 			mn=identify[27...47].pack("n*")
